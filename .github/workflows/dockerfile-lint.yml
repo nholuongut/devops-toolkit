@@ -1,0 +1,22 @@
+name: Dockerfile Lint
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    paths: ["Dockerfile"]
+
+# Abort the previous running CI workflow in the same pull request
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dockerfile-lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run Dockerfile lint
+      # https://github.com/hadolint/hadolint
+      # TODO: find better alternatives?
+      # Do no fail the workflow on linter error at initial phase, will update this workflow later
+      run: docker run --rm -i hadolint/hadolint < Dockerfile || true
